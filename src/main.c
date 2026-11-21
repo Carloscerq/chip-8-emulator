@@ -1,9 +1,50 @@
 #include "emulator.h"
 #include "log.h"
+#include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef DO_UNIT_TEST
+void test_decode_instruction() {
+  struct instruction_info info;
+
+  // Test 1: OP_CLEAR_DISP (0x00E0)
+  info = decode_instruction(0x00E0);
+  assert(info.type == OP_CLEAR_DISP);
+  assert(info.nn == 0xE0);
+
+  // Test 2: OP_JUMP (0x1234)
+  // 1NNN means jump to NNN. So NNN should be 0x234.
+  info = decode_instruction(0x1234);
+  assert(info.type == OP_JUMP);
+  assert(info.nnn == 0x234);
+
+  // Test 3: OP_ADD_VX_VY (0x8AB4)
+  // 8XY4 means add Vy to Vx. X = A, Y = B, N = 4.
+  info = decode_instruction(0x8AB4);
+  assert(info.type == OP_ADD_VX_VY);
+  assert(info.x == 0x0A);
+  assert(info.y == 0x0B);
+  assert(info.n == 0x04);
+
+  // Test 4: OP_SET_I (0xAFFF)
+  // ANNN means set I to NNN. NNN should be 0xFFF.
+  info = decode_instruction(0xAFFF);
+  assert(info.type == OP_SET_I);
+  assert(info.nnn == 0xFFF);
+
+  // Test 5: OP_STORE_PRESS_VX (0xF30A)
+  // FX0A means wait for key press and store in Vx. X = 3.
+  info = decode_instruction(0xF30A);
+  assert(info.type == OP_STORE_PRESS_VX);
+  assert(info.x == 0x03);
+  assert(info.nn == 0x0A);
+
+  LOG_INFO("All decode tests passed successfully!");
+}
+#endif
 
 void print_help(FILE *stream) {
   fprintf(stream, "Usage: chip8_emulator [OPTIONS]\n\n");
@@ -49,6 +90,10 @@ int main(int argc, char *argv[]) {
   }
 
   log_init(log_level, log_filepath);
+
+#ifdef DO_UNIT_TEST
+  test_decode_instruction();
+#endif
 
   if (filepath == NULL) {
     LOG_ERROR("filepath is required.\n\n");
