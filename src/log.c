@@ -36,7 +36,7 @@ void log_init(enum LOG_LEVEL lvl, const char *file_path) {
     log_configs.output_stream = fopen(file_path, "a");
     if (log_configs.output_stream != NULL) {
       fprintf(stderr, "Failed to open file %s", file_path);
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
 }

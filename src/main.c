@@ -1,3 +1,4 @@
+#include "emulator.h"
 #include "log.h"
 #include <getopt.h>
 #include <stdio.h>
@@ -56,6 +57,9 @@ int main(int argc, char *argv[]) {
   }
 
   LOG_DEBUG("Filepath: %s\n", filepath);
+
+  configure_rom_file(filepath);
+  read_rom_file();
 
   return EXIT_SUCCESS;
 }
