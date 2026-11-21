@@ -7,6 +7,8 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 set(SOURCES
     src/main.c
+    src/log.h
+    src/log.c
 )
 
 add_executable(chip8_emulator ${SOURCES})
