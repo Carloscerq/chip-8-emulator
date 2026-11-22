@@ -8,3 +8,4 @@ CPackSourceConfig.cmake
 _deps/
 .Trash*
 *.ch8
+build

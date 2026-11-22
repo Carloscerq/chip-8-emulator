@@ -59,6 +59,10 @@ void print_help(FILE *stream) {
   fprintf(stream, "  -o, --logfile <path>    Specify a file to write logs to "
                   "(Default: stdout)\n");
   fprintf(stream,
+          "  -s, --speed <n>         Instructions executed per frame at 60 FPS "
+          "(Default: %d)\n",
+          INSTRUCTIONS_PER_FRAME);
+  fprintf(stream,
           "  -h, --help              Display this help message and exit\n");
 }
 
@@ -67,20 +71,29 @@ int main(int argc, char *argv[]) {
   char *filepath = NULL;
   enum LOG_LEVEL log_level = DEFAULT_LOG_LEVEL;
   char *log_filepath = NULL;
+  int instructions_per_frame = INSTRUCTIONS_PER_FRAME;
 
   struct option long_options[] = {{"filepath", required_argument, 0, 'f'},
                                   {"level", required_argument, 0, 'l'},
                                   {"logfile", required_argument, 0, 'o'},
+                                  {"speed", required_argument, 0, 's'},
                                   {"help", no_argument, 0, 'h'},
                                   {0, 0, 0, 0}};
 
-  while ((opt = getopt_long(argc, argv, "f:l:h", long_options, NULL)) != -1) {
+  while ((opt = getopt_long(argc, argv, "f:l:s:h", long_options, NULL)) != -1) {
     switch (opt) {
     case 'f':
       filepath = optarg;
       break;
     case 'l':
       log_level = get_log_level_from_string(optarg);
+      break;
+    case 's':
+      instructions_per_frame = atoi(optarg);
+      if (instructions_per_frame <= 0) {
+        fprintf(stderr, "speed must be a positive integer.\n");
+        return EXIT_FAILURE;
+      }
       break;
     case 'h':
       print_help(stdout);
@@ -114,7 +127,7 @@ int main(int argc, char *argv[]) {
   while (!WindowShouldClose()) {
     update_input();
 
-    for (int i = 0; i < INSTRUCTIONS_PER_FRAME; i++) {
+    for (int i = 0; i < instructions_per_frame; i++) {
       cpu_step();
     }
 
@@ -124,10 +137,8 @@ int main(int argc, char *argv[]) {
       // TODO: Implement this
     }
 
-    if (get_draw_flag()) {
-      draw_screen(get_display_buffer());
-      clear_draw_flag();
-    }
+    draw_screen(get_display_buffer());
+    clear_draw_flag();
   }
 
   close_gui();

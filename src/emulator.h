@@ -14,7 +14,7 @@
 #define DISPLAY_WIDTH 64
 #define DISPLAY_HEIGHT 32
 #define KEYPAD_SIZE 16
-#define INSTRUCTIONS_PER_FRAME 5
+#define INSTRUCTIONS_PER_FRAME 15
 
 // Standard CHIP-8 Font set (0-9, A-F)
 static const uint8_t fontset[80] = {
