@@ -224,13 +224,13 @@ void op_call(struct instruction_info instruction) {
   LOG_DEBUG("Ignored SYS instruction at 0x%03X", instruction.nnn);
 }
 
-void op_clear_disp(struct instruction_info instruction) {
+void op_clear_disp() {
   LOG_DEBUG("Running OP_CLEAR instruction");
   memset(cpu_state.display, 0, sizeof(cpu_state.display));
   cpu_state.draw_flag = true;
 }
 
-void op_sub_return(struct instruction_info instruction) {
+void op_sub_return() {
   LOG_DEBUG("Running OP_SUB_RETURN instruction. Going back to %d",
             cpu_state.stack_pointer - 1);
   if (cpu_state.stack_pointer <= 0) {
@@ -558,6 +558,6 @@ void op_fill_v0_to_vx_with_mem(struct instruction_info instruction) {
   }
 }
 
-void execute_instruction(struct instruction_info instruction) {
+void execute_instruction() {
   // TODO: Implement this
 }

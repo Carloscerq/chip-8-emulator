@@ -1,0 +1,41 @@
+{
+  "name": "chip-8-emulator",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  // Built-in non-root user of ubuntu images (uid 1000), keeps file ownership sane on the host
+  "remoteUser": "ubuntu",
+  "updateRemoteUserUID": true,
+
+  // GUI forwarding so the raylib window shows up on the host (X11 / XWayland and Wayland)
+  "runArgs": [
+    "--device=/dev/dri",
+    "--device=/dev/snd"
+  ],
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+    "source=${localEnv:XDG_RUNTIME_DIR},target=/tmp/runtime-host,type=bind"
+  ],
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
+    "XDG_RUNTIME_DIR": "/tmp/runtime-host"
+  },
+
+  "postCreateCommand": "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "llvm-vs-code-extensions.vscode-clangd"
+      ],
+      "settings": {
+        "cmake.buildDirectory": "${workspaceFolder}/build",
+        "cmake.generator": "Ninja"
+      }
+    }
+  }
+}

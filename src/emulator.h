@@ -90,11 +90,11 @@ void configure_rom_file(char *filepath);
 void read_rom_file(void);
 
 struct instruction_info decode_instruction(uint16_t opcode);
-void execute_instruction(struct instruction_info instruction);
+void execute_instruction();
 
 void op_call(struct instruction_info instruction);
-void op_clear_disp(struct instruction_info instruction);
-void op_sub_return(struct instruction_info instruction);
+void op_clear_disp();
+void op_sub_return();
 void op_jump(struct instruction_info instruction);
 void op_sub_call(struct instruction_info instruction);
 void op_skip_next_inst_if_eq(struct instruction_info instruction);
