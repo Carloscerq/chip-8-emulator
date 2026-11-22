@@ -1,7 +1,9 @@
 #include "emulator.h"
+#include "interface.h"
 #include "log.h"
 #include <assert.h>
 #include <getopt.h>
+#include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,8 +106,30 @@ int main(int argc, char *argv[]) {
   LOG_DEBUG("Filepath: %s\n", filepath);
 
   configure_rom_file(filepath);
+  configure_gui();
+  clean_screen();
   init_cpu();
   read_rom_file();
 
+  while (!WindowShouldClose()) {
+    update_input();
+
+    for (int i = 0; i < INSTRUCTIONS_PER_FRAME; i++) {
+      cpu_step();
+    }
+
+    update_timers();
+
+    if (get_sound_timer() > 0) {
+      // TODO: Implement this
+    }
+
+    if (get_draw_flag()) {
+      draw_screen(get_display_buffer());
+      clear_draw_flag();
+    }
+  }
+
+  close_gui();
   return EXIT_SUCCESS;
 }

@@ -6,3 +6,5 @@ Makefile
 CPackConfig.cmake
 CPackSourceConfig.cmake
 _deps/
+.Trash*
+*.ch8

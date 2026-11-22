@@ -30,6 +30,8 @@ set(SOURCES
     src/log.c
     src/emulator.h
     src/emulator.c
+    src/interface.h
+    src/interface.c
 )
 
 add_executable(chip8_emulator ${SOURCES})

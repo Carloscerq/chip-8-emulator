@@ -558,6 +558,147 @@ void op_fill_v0_to_vx_with_mem(struct instruction_info instruction) {
   }
 }
 
-void execute_instruction() {
-  // TODO: Implement this
+bool get_draw_flag(void) { return cpu_state.draw_flag; }
+
+void clear_draw_flag() { cpu_state.draw_flag = false; }
+
+const uint8_t *get_display_buffer(void) { return cpu_state.display; }
+
+void cpu_step(void) {
+  uint16_t opcode = (cpu_state.memory[cpu_state.program_counter] << 8 |
+                     cpu_state.memory[cpu_state.program_counter + 1]);
+
+  cpu_state.program_counter += 2;
+  struct instruction_info info = decode_instruction(opcode);
+  execute_instruction(info);
+}
+
+void update_timers(void) {
+  if (cpu_state.delay_timer > 0) {
+    cpu_state.delay_timer--;
+  }
+  if (cpu_state.sound_timer > 0) {
+    cpu_state.sound_timer--;
+  }
+}
+
+uint8_t get_sound_timer(void) { return cpu_state.sound_timer; }
+
+void set_key_state(uint8_t key, bool is_pressed) {
+  if (key < KEYPAD_SIZE) {
+    cpu_state.keypad[key] = is_pressed;
+  }
+}
+
+void execute_instruction(struct instruction_info instruction) {
+  switch (instruction.type) {
+  case OP_CALL:
+    op_call(instruction);
+    break;
+  case OP_CLEAR_DISP:
+    op_clear_disp();
+    break;
+  case OP_SUB_RETURN:
+    op_sub_return();
+    break;
+  case OP_JUMP:
+    op_jump(instruction);
+    break;
+  case OP_SUB_CALL:
+    op_sub_call(instruction);
+    break;
+  case OP_SKIP_NEXT_INST_IF_EQ:
+    op_skip_next_inst_if_eq(instruction);
+    break;
+  case OP_SKIP_NEXT_INST_IF_NOT_EQ:
+    op_skip_next_inst_if_not_eq(instruction);
+    break;
+  case OP_SKIP_NEXT_INST_IF_VX_EQ_VY:
+    op_skip_next_inst_if_vx_eq_vy(instruction);
+    break;
+  case OP_SET_VX:
+    op_set_vx(instruction);
+    break;
+  case OP_ADD_VX:
+    op_add_vx(instruction);
+    break;
+  case OP_SET_VX_VY:
+    op_set_vx_vy(instruction);
+    break;
+  case OP_BITWISE_OR_VX_VY:
+    op_bitwise_or_vx_vy(instruction);
+    break;
+  case OP_BITWISE_AND_VX_VY:
+    op_bitwise_and_vx_vy(instruction);
+    break;
+  case OP_BITWISE_XOR_VX_VY:
+    op_bitwise_xor_vx_vy(instruction);
+    break;
+  case OP_ADD_VX_VY:
+    op_add_vx_vy(instruction);
+    break;
+  case OP_SUB_VX_VY:
+    op_sub_vx_vy(instruction);
+    break;
+  case OP_RIGHT_SHIFT_VX:
+    op_right_shift_vx(instruction);
+    break;
+  case OP_SET_VX_VY_MINUS_VX:
+    op_set_vx_vy_minus_vx(instruction);
+    break;
+  case OP_LEFT_SHIFT_VX:
+    op_left_shift_vx(instruction);
+    break;
+  case OP_SKIP_NEXT_INST_IF_VX_NOT_EQ_VY:
+    op_skip_next_inst_if_vx_not_eq_vy(instruction);
+    break;
+  case OP_SET_I:
+    op_set_i(instruction);
+    break;
+  case OP_JUMP_PLUS_V0:
+    op_jump_plus_v0(instruction);
+    break;
+  case OP_SET_VX_BITWISE_RAND:
+    op_set_vx_bitwise_rand(instruction);
+    break;
+  case OP_DRAWS_SPRITE:
+    op_draws_sprite(instruction);
+    break;
+  case OP_SKIP_NEXT_INST_IF_VX_PRESSED:
+    op_skip_next_inst_if_vx_pressed(instruction);
+    break;
+  case OP_SKIP_NEXT_INST_IF_VX_NOT_PRESSED:
+    op_skip_next_inst_if_vx_not_pressed(instruction);
+    break;
+  case OP_SET_VX_DELAY_TIME:
+    op_set_vx_delay_time(instruction);
+    break;
+  case OP_STORE_PRESS_VX:
+    op_store_press_vx(instruction);
+    break;
+  case OP_SET_DELAY_TIMER_TO_VX:
+    op_set_delay_timer_to_vx(instruction);
+    break;
+  case OP_SET_SOUND_TIMER_TO_VX:
+    op_set_sound_timer_to_vx(instruction);
+    break;
+  case OP_ADD_VX_TO_I:
+    op_add_vx_to_i(instruction);
+    break;
+  case OP_SET_I_SPRITE_LOCATION:
+    op_set_i_sprite_location(instruction);
+    break;
+  case OP_STORE_BINARY_CODED_DECIMAL_I_IN_VX:
+    op_store_binary_coded_decimal_i_in_vx(instruction);
+    break;
+  case OP_STORE_V0_TO_VX_IN_MEMORY:
+    op_store_v0_to_vx_in_memory(instruction);
+    break;
+  case OP_FILL_V0_TO_VX_WITH_MEM:
+    op_fill_v0_to_vx_with_mem(instruction);
+    break;
+  default:
+    LOG_ERROR("Unknown instruction type executed.");
+    break;
+  }
 }

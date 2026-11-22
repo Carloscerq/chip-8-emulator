@@ -14,6 +14,7 @@
 #define DISPLAY_WIDTH 64
 #define DISPLAY_HEIGHT 32
 #define KEYPAD_SIZE 16
+#define INSTRUCTIONS_PER_FRAME 5
 
 // Standard CHIP-8 Font set (0-9, A-F)
 static const uint8_t fontset[80] = {
@@ -89,8 +90,18 @@ void configure_rom_file(char *filepath);
 
 void read_rom_file(void);
 
+uint8_t get_sound_timer(void);
+void update_timers(void);
+void cpu_step(void);
+
 struct instruction_info decode_instruction(uint16_t opcode);
-void execute_instruction();
+void execute_instruction(struct instruction_info instruction);
+
+void clear_draw_flag(void);
+bool get_draw_flag(void);
+const uint8_t *get_display_buffer(void);
+
+void set_key_state(uint8_t key, bool is_pressed);
 
 void op_call(struct instruction_info instruction);
 void op_clear_disp();
