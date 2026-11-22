@@ -1,9 +1,11 @@
 #pragma once
 #include "log.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TOTAL_MEMORY 4096
 #define MEMORY_OFFSET 512
@@ -12,6 +14,26 @@
 #define DISPLAY_WIDTH 64
 #define DISPLAY_HEIGHT 32
 #define KEYPAD_SIZE 16
+
+// Standard CHIP-8 Font set (0-9, A-F)
+static const uint8_t fontset[80] = {
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
 
 enum INSTRUCTIONS {
   OP_CALL,                               // 0NNN
@@ -33,11 +55,11 @@ enum INSTRUCTIONS {
   OP_RIGHT_SHIFT_VX,                     // 8XY6
   OP_SET_VX_VY_MINUS_VX,                 // 8XY7
   OP_LEFT_SHIFT_VX,                      // 8XYE
-  OP_SKPI_NEXT_INST_IF_VX_NOT_EQ_VY,     // 9XY0
+  OP_SKIP_NEXT_INST_IF_VX_NOT_EQ_VY,     // 9XY0
   OP_SET_I,                              // ANNN
   OP_JUMP_PLUS_V0,                       // BNNN
   OP_SET_VX_BITWISE_RAND,                // CXNN
-  OP_DRAWS_SPRIT,                        // DXYN
+  OP_DRAWS_SPRITE,                       // DXYN
   OP_SKIP_NEXT_INST_IF_VX_PRESSED,       // EX9E
   OP_SKIP_NEXT_INST_IF_VX_NOT_PRESSED,   // EXA1
   OP_SET_VX_DELAY_TIME,                  // FX07
@@ -61,8 +83,47 @@ struct instruction_info {
   uint8_t n;
 };
 
+void init_cpu(void);
+
 void configure_rom_file(char *filepath);
 
-void read_rom_file();
+void read_rom_file(void);
 
 struct instruction_info decode_instruction(uint16_t opcode);
+void execute_instruction(struct instruction_info instruction);
+
+void op_call(struct instruction_info instruction);
+void op_clear_disp(struct instruction_info instruction);
+void op_sub_return(struct instruction_info instruction);
+void op_jump(struct instruction_info instruction);
+void op_sub_call(struct instruction_info instruction);
+void op_skip_next_inst_if_eq(struct instruction_info instruction);
+void op_skip_next_inst_if_not_eq(struct instruction_info instruction);
+void op_skip_next_inst_if_vx_eq_vy(struct instruction_info instruction);
+void op_set_vx(struct instruction_info instruction);
+void op_add_vx(struct instruction_info instruction);
+void op_set_vx_vy(struct instruction_info instruction);
+void op_bitwise_or_vx_vy(struct instruction_info instruction);
+void op_bitwise_and_vx_vy(struct instruction_info instruction);
+void op_bitwise_xor_vx_vy(struct instruction_info instruction);
+void op_add_vx_vy(struct instruction_info instruction);
+void op_sub_vx_vy(struct instruction_info instruction);
+void op_right_shift_vx(struct instruction_info instruction);
+void op_set_vx_vy_minus_vx(struct instruction_info instruction);
+void op_left_shift_vx(struct instruction_info instruction);
+void op_skip_next_inst_if_vx_not_eq_vy(struct instruction_info instruction);
+void op_set_i(struct instruction_info instruction);
+void op_jump_plus_v0(struct instruction_info instruction);
+void op_set_vx_bitwise_rand(struct instruction_info instruction);
+void op_draws_sprite(struct instruction_info instruction);
+void op_skip_next_inst_if_vx_pressed(struct instruction_info instruction);
+void op_skip_next_inst_if_vx_not_pressed(struct instruction_info instruction);
+void op_set_vx_delay_time(struct instruction_info instruction);
+void op_store_press_vx(struct instruction_info instruction);
+void op_set_delay_timer_to_vx(struct instruction_info instruction);
+void op_set_sound_timer_to_vx(struct instruction_info instruction);
+void op_add_vx_to_i(struct instruction_info instruction);
+void op_set_i_sprite_location(struct instruction_info instruction);
+void op_store_binary_coded_decimal_i_in_vx(struct instruction_info instruction);
+void op_store_v0_to_vx_in_memory(struct instruction_info instruction);
+void op_fill_v0_to_vx_with_mem(struct instruction_info instruction);

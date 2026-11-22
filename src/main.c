@@ -104,6 +104,7 @@ int main(int argc, char *argv[]) {
   LOG_DEBUG("Filepath: %s\n", filepath);
 
   configure_rom_file(filepath);
+  init_cpu();
   read_rom_file();
 
   return EXIT_SUCCESS;
