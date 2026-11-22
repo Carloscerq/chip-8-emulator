@@ -12,3 +12,7 @@ void close_gui();
 void clean_screen();
 void draw_screen(const uint8_t *display);
 void update_input(void);
+void audio_callback(void *bufferData, unsigned int frames);
+
+void play_audio(void);
+void stop_audio(void);

@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ninja-build \
     pkg-config \
     libasound2-dev \
+    libpulse0 \
     libgl1-mesa-dev libglu1-mesa-dev libegl1-mesa-dev \
     libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxinerama-dev libxext-dev \
     libwayland-dev wayland-protocols libxkbcommon-dev \

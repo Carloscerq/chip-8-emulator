@@ -131,11 +131,13 @@ int main(int argc, char *argv[]) {
       cpu_step();
     }
 
-    update_timers();
-
     if (get_sound_timer() > 0) {
-      // TODO: Implement this
+      play_audio();
+    } else {
+      stop_audio();
     }
+
+    update_timers();
 
     draw_screen(get_display_buffer());
     clear_draw_flag();

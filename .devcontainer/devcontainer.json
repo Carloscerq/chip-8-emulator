@@ -20,7 +20,8 @@
   "containerEnv": {
     "DISPLAY": "${localEnv:DISPLAY}",
     "WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
-    "XDG_RUNTIME_DIR": "/tmp/runtime-host"
+    "XDG_RUNTIME_DIR": "/tmp/runtime-host",
+    "PULSE_SERVER": "unix:/tmp/runtime-host/pulse/native"
   },
 
   "postCreateCommand": "cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",

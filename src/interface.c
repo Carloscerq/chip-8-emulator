@@ -2,6 +2,27 @@
 #include "log.h"
 #include <raylib.h>
 
+static struct gui_config {
+  AudioStream beepStream;
+} gui_config;
+
+void audio_callback(void *bufferData, unsigned int frames) {
+  short *buffer = (short *)bufferData;
+  static float phase = 0.0f;
+  float frequency = 440.0f; // 440 Hz (A4 note)
+  float sampleRate = 44100.0f;
+
+  for (unsigned int i = 0; i < frames; i++) {
+    phase += frequency / sampleRate;
+    if (phase >= 1.0f)
+      phase -= 1.0f;
+
+    // Square wave: positive for first half of the cycle, negative for the
+    // second 8000 is the volume amplitude (approx 25% of the max short value)
+    buffer[i] = (phase < 0.5f) ? 8000 : -8000;
+  }
+}
+
 void configure_gui() {
   LOG_INFO("Starting the GUI");
   SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
@@ -11,6 +32,16 @@ void configure_gui() {
   SetTargetFPS(TARGET_FPS);
   InitAudioDevice();
   // SetExitKey(0);
+
+  // Create an audio stream: 44100 Hz, 16-bit, 1 channel (Mono)
+  SetAudioStreamBufferSizeDefault(1024);
+  gui_config.beepStream = LoadAudioStream(44100, 16, 1);
+  SetAudioStreamCallback(gui_config.beepStream, audio_callback);
+
+  // Start the stream, then immediately pause it so it doesn't beep continuously
+  // on launch
+  PlayAudioStream(gui_config.beepStream);
+  PauseAudioStream(gui_config.beepStream);
 }
 
 void close_gui() {
@@ -65,4 +96,16 @@ void update_input(void) {
   set_key_state(0x0, IsKeyDown(KEY_X));
   set_key_state(0xB, IsKeyDown(KEY_C));
   set_key_state(0xF, IsKeyDown(KEY_V));
+}
+
+void play_audio(void) {
+  if (!IsAudioStreamPlaying(gui_config.beepStream)) {
+    ResumeAudioStream(gui_config.beepStream);
+  }
+}
+
+void stop_audio(void) {
+  if (IsAudioStreamPlaying(gui_config.beepStream)) {
+    PauseAudioStream(gui_config.beepStream);
+  }
 }
